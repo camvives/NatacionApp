@@ -1,3 +1,5 @@
+"""Modelos a representar en la base de datos"""
+
 from sqlalchemy import Column, Integer, String, Boolean, Date, Interval, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -8,18 +10,21 @@ Base = declarative_base()
 
 # Define models
 class Nadador(Base):
+    """Clase que representa un Nadador"""
     __tablename__ = 'Nadadores'
 
     id = Column(Integer, primary_key=True)
     nombreApellido = Column(String)
     sexo = Column(Boolean)
-    categoria = Column(String)
-    club = Column(String)
+    categoria_id = Column(Integer, ForeignKey('Categorias.id'))
+    club_id = Column(Integer, ForeignKey('Clubes.id'))
 
-    # Establish a many-to-many relationship with Pruebas.
+    categoria = relationship('Categoria', back_populates='nadadores')
+    club = relationship('Club', back_populates='nadadores')
     pruebas = relationship('Nadadores_Pruebas', back_populates='nadadores_pruebas')
 
 class Prueba(Base):
+    """Clase que representa una Prueba (por ejemplo 25m mariposa)"""
     __tablename__ = 'Pruebas'
 
     id = Column(Integer, primary_key=True)
@@ -28,7 +33,24 @@ class Prueba(Base):
     # Establish a many-to-many relationship with Nadadores.
     nadadores = relationship('Nadadores_Pruebas', back_populates='pruebas_nadadores')
 
-class Nadadores_Pruebas(Base):
+class Categoria(Base):
+    """Clase que representa una Categoria (A, B, C)"""
+    __tablename__ = 'Categorias'
+
+    id = Column(Integer, primary_key=True)
+    descripcion = Column(String)
+    nadadores = relationship('Nadador', back_populates='categoria')
+
+class Club(Base):
+    """Clase que representa un Club"""
+    __tablename__ = 'Clubes'
+
+    id = Column(Integer, primary_key=True)
+    descripcion = Column(String)
+    nadadores = relationship('Nadador', back_populates='clubes')
+
+class NadadoresPruebas(Base):
+    """Clase que representa la relación entre nadadores y pruebas"""
     __tablename__ = 'Nadadores_Pruebas'
     
     id = Column(Integer, primary_key=True)

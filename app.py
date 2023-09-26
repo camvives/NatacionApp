@@ -1,3 +1,4 @@
-from presentation import main
+"""Inicia aplicación"""
+from views.home import main
 
 main()
